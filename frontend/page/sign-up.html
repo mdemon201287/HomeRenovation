@@ -1,0 +1,119 @@
+<!-- ======= Intro Single ======= -->
+<section class="intro-single">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 col-lg-8">
+        <div class="title-single-box">
+          <h1 class="title-single">Sign up</h1>
+          <span class="color-text-a">If you do not have any account</span>
+        </div>
+      </div>
+      <div class="col-md-12 col-lg-4">
+        <nav aria-label="breadcrumb" class="breadcrumb-box d-flex justify-content-lg-end">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="/frontend/index.html">Home</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              Sign up
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+</section><!-- End Intro Single-->
+
+<!-- ======= Property Grid ======= -->
+<section class="property-grid grid">
+  <div class="container d-flex justify-content-center align-items-center vh-20">
+    <div class="row">
+      <div class="col-12">
+        <!-- The d-flex class makes the container a flex container -->
+        <div class="card">
+          <div class="card-body">
+            <form action="" class="form-control" method="POST">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="name" name="name" placeholder="" required>
+                <label for="floatingInput">Your name</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="email" name="email" placeholder="" required>
+                <label for="floatingInput">Email address</label>
+              </div>
+              <div class="form-floating">
+                <input type="password" class="form-control" id="password" name="password" placeholder="" required>
+                <label for="floatingPassword">Password</label>
+              </div>
+              <div class="mt-4">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="path" name="path" value="user" checked>
+                  <label class="form-check-label" for="flexRadioDefault1">User</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="path" name="path" value="builder" >
+                  <label class="form-check-label" for="flexRadioDefault2">Builder</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="path" name="path" value="home-decor">
+                  <label class="form-check-label" for="flexRadioDefault3">Home Decor</label>
+                </div>
+              </div>
+              <div class="mt-2">
+                <button class="btn btn-primary btn-sm" type="submit" id="submit_signup">Sign up</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  $(document).ready(function(){
+    $("#submit_signup").on("click", function (e) {
+      e.preventDefault();
+      const link = $(this).attr("id");
+      const name = $("#name").val();
+      const email = $("#email").val();
+      const password = $("#password").val();
+      const path = $("input[id='path']:checked").val();
+      const url = `http://localhost/rent_house_uiu/backend/api/v1/submit_signup/abh1522agwe522255hba514125/${link}`;
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: JSON.stringify({
+          data:{
+            name: name,
+            email: email,
+            password: password,
+            path: path
+          }
+        }),
+        contentType: "application/json; charset=utf-8", 
+        dataType: "json",
+        beforeSend:function(){
+          $("#submit_signup").attr("disabled", "disabled");
+          $("#submit_signup").html("Please Wait");
+        },
+        success: function (response) {
+          setTimeout(function(){
+            if(response.status === '409'){
+              $("#submit_signup").prop("disabled", false);
+              $("#submit_signup").html("Sign Up");
+              alert(response.msg)
+            }else{
+              $("#default-main").html('default-main');
+              $("#page").html(response.url);
+            }
+            console.log(response);
+          },2000);
+        },
+        error: function (error) {
+          console.log("Error loading content:", error);
+        }
+      });
+    });
+  });
+</script>

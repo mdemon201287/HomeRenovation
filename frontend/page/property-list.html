@@ -1,0 +1,145 @@
+
+
+  <!-- ======= Intro Single ======= -->
+  <section class="intro-single">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 col-lg-8">
+          <div class="title-single-box">
+            <h1 class="title-single">Our Amazing Properties</h1>
+            <span class="color-text-a">Grid Properties</span>
+          </div>
+        </div>
+        <div class="col-md-12 col-lg-4">
+          <nav aria-label="breadcrumb" class="breadcrumb-box d-flex justify-content-lg-end">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="#">Home</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">
+                Properties Grid
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </section><!-- End Intro Single-->
+
+  <!-- ======= Property Grid ======= -->
+  <section class="property-grid grid">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="grid-option">
+              <select class="form-control custom-select" id="homeListDropDown">
+                <option selected value="all">All</option>
+                <option value="rent">For Rent</option>
+                <option value="sale">For Sale</option>
+              </select>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="grid-option">
+             <input type="number" min="100" id="min" placeholder="From price">
+             <input type="number" id="max" placeholder="To price">
+             <button class="btn btn-success" id="sortByPrice">Search</button>
+          </div>
+        </div>
+        <div id="productCard"></div>
+       
+      </div>
+     
+    </div>
+  </section><!-- End Property Grid Single-->
+  <script>
+    $(document).ready(function () {
+      const loader = `<div class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Loading...</span> 
+                  </div> <span class="pl-2">Loading...</span>`;
+      function FetchHouseList(){
+        const selected_query = 'all';
+        const url = `http://localhost/rent_house_uiu/backend/api/v1/fetch_hous_list/abh1522agwe522255hba514125/${selected_query}`;
+        $.ajax({
+          type:"GET",
+          url:url,
+          dataType: "json",
+          beforeSend:function(){
+            $("#productCard").html(loader);
+          },
+           success: function (response) {
+            $("#productCard").html('');
+            $("#productCard").append(response.msg);
+          },
+          error: function (error) {
+            console.log("Error loading content:", error);
+          }
+        });
+      }
+      FetchHouseList();
+      $('#homeListDropDown').on('change', function () {
+        const selected_query = $(this).val();
+        const url = `http://localhost/rent_house_uiu/backend/api/v1/fetch_hous_list/abh1522agwe522255hba514125/${selected_query}`;
+         $.ajax({
+          type: "GET",
+          url: url,
+          dataType: "json",
+          beforeSend: function () {
+            $("#productCard").html(loader);
+          },
+          success: function (response) {
+            $("#productCard").html('');
+            $("#productCard").append(response.msg);
+          },
+          error: function (error) {
+            console.log("Error loading content:", error);
+          }
+        });
+      });
+      $(document).on('click', '.price-a', function (e) {
+        e.preventDefault();
+        const dataSlValue = $(this).data('sl');
+        localStorage.setItem('NextpathDetails', JSON.stringify(dataSlValue));
+        $.ajax({
+          type: "GET",
+          url: "http://localhost/rent_house_uiu/backend/api/v1/page-info/abh1522agwe522255hba514125/product_details",
+          dataType: "json",
+           beforeSend: function () {
+            $("#productCard").html(loader);
+          },
+          success: function (response) {
+             window.location.href = response.msg;
+          },
+          error: function (error) {
+            console.log("Error loading content:", error);
+          }
+        });
+      });
+      $(document).on('click', '#sortByPrice', function (e) {
+        e.preventDefault();
+        const min = $('#min').val();
+        const max = $('#max').val();
+        const selected_query = $(this).val();
+        const url = `http://localhost/rent_house_uiu/backend/api/v1/fetch_hous_list_price_sort/abh1522agwe522255hba514125/${min}/${max}`;
+        $.ajax({
+          type: "GET",
+          url: url,
+          dataType: "json",
+          beforeSend: function () {
+            $("#productCard").html(loader);
+          },
+          success: function (response) {
+            if(response.status == "4004"){
+              alert(response.msg)
+            }else{
+              $("#productCard").html('');
+              $("#productCard").append(response.msg);
+            }
+          },
+          error: function (error) {
+            console.log("Error loading content:", error);
+          }
+        });
+      });
+    });
+  </script>

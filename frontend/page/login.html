@@ -1,0 +1,130 @@
+<!-- ======= Intro Single ======= -->
+<section class="intro-single">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 col-lg-8">
+        <div class="title-single-box">
+          <h1 class="title-single">Login / Sign up</h1>
+          <span class="color-text-a">Log in with your email and password</span>
+        </div>
+      </div>
+      <div class="col-md-12 col-lg-4">
+        <nav aria-label="breadcrumb" class="breadcrumb-box d-flex justify-content-lg-end">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="/frontend/index.html">Home</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              Login
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+</section><!-- End Intro Single-->
+
+<!-- ======= Property Grid ======= -->
+<section class="property-grid grid">
+  <div class="container d-flex justify-content-center align-items-center vh-20">
+    <div class="row">
+      <div class="col-12">
+        <!-- The d-flex class makes the container a flex container -->
+        <div class="card">
+          <div class="card-body">
+            <form action="" class="form-control">
+              <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com">
+                <label for="floatingInput">Email address</label>
+              </div>
+              <div class="form-floating">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                <label for="floatingPassword">Password</label>
+              </div>
+              <div class="mt-2">
+                <button class="btn btn-primary btn-sm" id="submit_login">Login</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 pt-4">
+        <p>No account? <a href="" class="text-success" id="sign_up">Sign Up Now</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  $(document).ready(function(){
+    $("#sign_up").on("click", function (e) {
+      e.preventDefault();
+      const link = $(this).attr("id");
+      console.log(link);
+      const url = `http://localhost/rent_house_uiu/backend/api/v1/page-info/abh1522agwe522255hba514125/${link}`;
+      $.ajax({
+        type: "GET",
+        url: url,
+        dataType: "json",
+        success: function (response) {
+          $("#default-main").html('default-main');
+          $("#page").html(response.msg);
+        },
+        error: function (error) {
+          console.log("Error loading content:", error);
+        }
+      });
+    });
+    function setCookie(cookieName, cookieValue, daysToExpire) {
+      var expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + daysToExpire);
+      var cookie = `${cookieName}=${JSON.stringify(cookieValue)}; expires=${expirationDate.toUTCString()}; path=/`;
+      document.cookie = cookie;
+    }
+    $("#submit_login").on("click", function (e) {
+      e.preventDefault();
+      const link = $(this).attr("id");
+      const email = $("#email").val();
+      const password = $("#password").val();
+      const url = `http://localhost/rent_house_uiu/backend/api/v1/submit_login/abh1522agwe522255hba514125/${link}`;
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: JSON.stringify({
+          data: {
+            email: email,
+            password: password
+          }
+        }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        beforeSend: function () {
+          $("#submit_login").attr("disabled", "disabled");
+          $("#submit_login").html("Please Wait");
+        },
+        success: function (response) {
+          setTimeout(function () {
+            if (response.status === '200') {
+             const userData = {
+                accessToken: response.accessToken,
+                email: response.email,
+                path: response.path,
+              };
+              localStorage.setItem('homelyAuth', JSON.stringify(userData));
+
+              window.location.href = response.url;
+            } else {
+              $("#submit_login").prop("disabled", false);
+              $("#submit_login").html("Log in");
+              alert(response.msg)
+            }
+            console.log(response);
+          }, 2000);
+        },
+        error: function (error) {
+          console.log("Error loading content:", error);
+        }
+      });
+    });
+  });
+</script>
